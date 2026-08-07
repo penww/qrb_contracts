@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package qrb.contract.geometry.v1;
+
+import "qrb/contract/geometry/v1/point3d.proto";
+import "qrb/contract/geometry/v1/quaternion.proto";
+
+// Mirrors QRB::Memory::Pose_t / geometry_msgs/Pose.
+message Pose {
+    Point3d    position    = 1;
+    Quaternion orientation = 2;
+}

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package qrb.contract.vision.v1;
+
+// Mirrors QRB::Memory::ObjectHypothesis_t / vision_msgs/ObjectHypothesis.
+message ObjectHypothesis {
+    string class_id = 1;  // Unique object class identifier.
+    double score    = 2;  // Confidence in [0, 1].
+}

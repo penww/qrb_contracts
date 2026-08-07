@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package qrb.contract.vision.v1;
+
+import "qrb/contract/geometry/v1/pose_with_covariance.proto";
+import "qrb/contract/vision/v1/object_hypothesis.proto";
+
+// Mirrors QRB::Memory::ObjectHypothesisWithPose_t /
+//         vision_msgs/ObjectHypothesisWithPose.
+message ObjectHypothesisWithPose {
+    ObjectHypothesis                            hypothesis = 1;
+    qrb.contract.geometry.v1.PoseWithCovariance pose       = 2;
+}

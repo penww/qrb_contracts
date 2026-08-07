@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package qrb.contract.vision.v1;
+
+import "qrb/contract/vision/v1/detection_3d.proto";
+
+// Mirrors QRB::Memory::ObjectDetectionDescriptor_t / vision_msgs/Detection3DArray.
+// Omitted local-only fields: pBuf, dmaHandle, pid, size, alignment, cache,
+//                            allocatorType, offset, validSize, id.
+message Detection3DArray {
+    uint64              timestamp_ns = 1;  // Acquisition timestamp (ns, CLOCK_MONOTONIC).
+    string              frame_id     = 2;  // Coordinate frame identifier.
+    repeated Detection3D detections  = 3;
+}

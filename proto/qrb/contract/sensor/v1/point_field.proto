@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package qrb.contract.sensor.v1;
+
+// Mirrors QRB::Memory::PointFieldType_e / sensor_msgs/PointField constants.
+enum PointFieldType {
+    POINT_FIELD_TYPE_UNSPECIFIED = 0;
+    POINT_FIELD_TYPE_INT8        = 1;
+    POINT_FIELD_TYPE_UINT8       = 2;
+    POINT_FIELD_TYPE_INT16       = 3;
+    POINT_FIELD_TYPE_UINT16      = 4;
+    POINT_FIELD_TYPE_INT32       = 5;
+    POINT_FIELD_TYPE_UINT32      = 6;
+    POINT_FIELD_TYPE_FLOAT32     = 7;
+    POINT_FIELD_TYPE_FLOAT64     = 8;
+}
+
+// Mirrors QRB::Memory::PointField_t / sensor_msgs/PointField.
+message PointField {
+    string         name     = 1;  // Field name (e.g. "x", "y", "z", "intensity").
+    uint32         offset   = 2;  // Byte offset within a single point.
+    PointFieldType datatype = 3;  // Scalar type of the field values.
+    uint32         count    = 4;  // Number of elements (usually 1).
+}

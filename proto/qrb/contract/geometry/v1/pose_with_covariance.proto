@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package qrb.contract.geometry.v1;
+
+import "qrb/contract/geometry/v1/pose.proto";
+
+// Mirrors QRB::Memory::PoseWithCovariance_t / geometry_msgs/PoseWithCovariance.
+// covariance: row-major 6x6 matrix for (x, y, z, rot_x, rot_y, rot_z).
+// Must have exactly 36 elements when set; empty means unknown covariance.
+message PoseWithCovariance {
+    Pose            pose       = 1;
+    repeated double covariance = 2;
+}
