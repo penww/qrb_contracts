@@ -5,7 +5,7 @@
 #define QRB_OBJECT_DETECTION_DESCRIPTOR_HPP
 
 #include "QC/Infras/Memory/BufferDescriptor.hpp"
-#include "QRB/Memory/Geometry/PoseDescriptor.hpp"
+#include "QRB/Memory/Common/Types.hpp"
 
 #include <cstdint>
 #include <cstring>
@@ -34,20 +34,6 @@ namespace Memory
 #ifndef QRB_DETECTION_MAX_RESULTS
 #define QRB_DETECTION_MAX_RESULTS 8
 #endif
-
-/**
- * @struct BoundingBox3d_t
- * @brief A 3-D bounding box positioned and rotated about its center (6 DOF),
- *        matching ROS 2 vision_msgs/BoundingBox3D.
- *
- * @param center  Position and orientation of the bounding box center.
- * @param size    Total size of the box (metres) along each axis.
- */
-typedef struct BoundingBox3d
-{
-    Pose_t     center;
-    Vector3d_t size;
-} BoundingBox3d_t;
 
 /**
  * @struct ObjectHypothesisRaw_t

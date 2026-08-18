@@ -5,6 +5,7 @@
 #define QRB_POINT_CLOUD_DESCRIPTOR_HPP
 
 #include "QC/Infras/Memory/BufferDescriptor.hpp"
+#include "QRB/Memory/Common/Types.hpp"
 
 #include <cstdint>
 #include <string>
@@ -16,48 +17,9 @@ namespace Memory
 {
 
 /**
- * @defgroup RoboticsMemory Robotics Memory Descriptors
+ * @addtogroup RoboticsMemory Robotics Memory Descriptors
  * @{
  */
-
-/**
- * @enum PointFieldType_e
- * @brief Scalar data types for a point field, matching ROS 2 sensor_msgs/PointField constants.
- */
-typedef enum
-{
-    POINT_FIELD_TYPE_INT8    = 1,
-    POINT_FIELD_TYPE_UINT8   = 2,
-    POINT_FIELD_TYPE_INT16   = 3,
-    POINT_FIELD_TYPE_UINT16  = 4,
-    POINT_FIELD_TYPE_INT32   = 5,
-    POINT_FIELD_TYPE_UINT32  = 6,
-    POINT_FIELD_TYPE_FLOAT32 = 7,
-    POINT_FIELD_TYPE_FLOAT64 = 8,
-    POINT_FIELD_TYPE_MAX     = UINT8_MAX
-} PointFieldType_e;
-
-/**
- * @struct PointField_t
- * @brief Describes one named field within a single point, matching ROS 2 sensor_msgs/PointField.
- *
- * @param name      Field name (e.g. "x", "y", "z", "intensity", "ring").
- * @param offset    Byte offset of this field from the start of a point.
- * @param datatype  Scalar type of the field values.
- * @param count     Number of elements of @c datatype in this field (usually 1).
- */
-typedef struct PointField
-{
-    std::string    name;
-    uint32_t       offset;
-    PointFieldType_e datatype;
-    uint32_t       count;
-
-    PointField( std::string name, uint32_t offset, PointFieldType_e datatype, uint32_t count = 1 )
-        : name( std::move( name ) ), offset( offset ), datatype( datatype ), count( count )
-    {}
-} PointField_t;
-
 
 /**
  * @struct PointCloudDescriptor_t
@@ -163,15 +125,15 @@ public:
     // Data members
     // -------------------------------------------------------------------------
 
-    uint32_t                 height;       /**< Number of rows; 1 for unordered clouds. */
-    uint32_t                 width;        /**< Points per row. */
-    std::vector<PointField_t> fields;      /**< Per-field layout descriptors. */
-    bool                     isBigEndian;  /**< True if point data is big-endian. */
-    uint32_t                 pointStep;    /**< Bytes per point. */
-    uint32_t                 rowStep;      /**< Bytes per row (pointStep * width). */
-    bool                     isDense;      /**< True if no NaN/Inf points are present. */
-    uint64_t                 timestampNs;  /**< Acquisition timestamp (ns, CLOCK_MONOTONIC). */
-    std::string              frameId;      /**< Coordinate frame identifier. */
+    uint32_t                  height;       /**< Number of rows; 1 for unordered clouds. */
+    uint32_t                  width;        /**< Points per row. */
+    std::vector<PointField_t> fields;       /**< Per-field layout descriptors. */
+    bool                      isBigEndian;  /**< True if point data is big-endian. */
+    uint32_t                  pointStep;    /**< Bytes per point. */
+    uint32_t                  rowStep;      /**< Bytes per row (pointStep * width). */
+    bool                      isDense;      /**< True if no NaN/Inf points are present. */
+    uint64_t                  timestampNs;  /**< Acquisition timestamp (ns, CLOCK_MONOTONIC). */
+    std::string               frameId;      /**< Coordinate frame identifier. */
 
 } PointCloudDescriptor_t;
 
