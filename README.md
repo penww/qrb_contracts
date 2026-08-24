@@ -23,10 +23,12 @@ mapping between the two representations.
 qrb_contracts/
 ├── include/
 │   └── QRB/Memory/
+│       ├── Common/
+│       │   └── Types.hpp                      # Shared geometry & sensor value types
 │       ├── Geometry/
-│       │   └── PoseDescriptor.hpp          # Geometry types + PoseDescriptor
+│       │   └── PoseDescriptor.hpp             # PoseDescriptor
 │       ├── Sensor/
-│       │   └── PointCloudDescriptor.hpp    # PointCloudDescriptor
+│       │   └── PointCloudDescriptor.hpp       # PointCloudDescriptor
 │       └── Vision/
 │           └── ObjectDetectionDescriptor.hpp  # ObjectDetectionDescriptor
 ├── proto/
@@ -64,15 +66,22 @@ QC::Memory::QCBufferDescriptorBase_t
     └── QRB::Memory::ObjectDetectionDescriptor_t  (Vision/ObjectDetectionDescriptor.hpp)
 ```
 
+### Common Types (`Common/Types.hpp`)
+
+Shared value types used across all descriptors, split into two groups:
+
+**Geometry** — mirrors `geometry_msgs`:
+`Point3d_t`, `Vector3d_t`, `Quaternion_t`, `Pose_t`, `Transform_t`,
+`PoseWithCovariance_t`, `BoundingBox3d_t`
+
+**Sensor** — mirrors `sensor_msgs`:
+`PointFieldType_e`, `PointField_t`
+
 ### Descriptors
 
 #### `PoseDescriptor_t`
 Mirrors `geometry_msgs/PoseWithCovarianceStamped`. Carries a single stamped
 6-DOF pose with a 6×6 covariance matrix.
-
-Also defines the shared geometry value types used across descriptors:
-`Point3d_t`, `Vector3d_t`, `Quaternion_t`, `Pose_t`, `Transform_t`,
-`PoseWithCovariance_t`.
 
 #### `PointCloudDescriptor_t`
 Mirrors `sensor_msgs/PointCloud2`. The raw point data is stored in the DMA
