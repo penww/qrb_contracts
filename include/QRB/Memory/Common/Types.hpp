@@ -129,53 +129,6 @@ typedef struct BoundingBox3d
 
 /** @} */  // end of RoboticsGeometry
 
-/**
- * @defgroup RoboticsSensor Robotics Sensor Types
- * @brief Sensor-related types shared across robotics buffer descriptors.
- *        Definitions mirror ROS 2 sensor_msgs to allow zero-copy mapping.
- * @{
- */
-
-/**
- * @enum PointFieldType_e
- * @brief Scalar data types for a point field, matching ROS 2 sensor_msgs/PointField constants.
- */
-typedef enum
-{
-    POINT_FIELD_TYPE_INT8    = 1,
-    POINT_FIELD_TYPE_UINT8   = 2,
-    POINT_FIELD_TYPE_INT16   = 3,
-    POINT_FIELD_TYPE_UINT16  = 4,
-    POINT_FIELD_TYPE_INT32   = 5,
-    POINT_FIELD_TYPE_UINT32  = 6,
-    POINT_FIELD_TYPE_FLOAT32 = 7,
-    POINT_FIELD_TYPE_FLOAT64 = 8,
-    POINT_FIELD_TYPE_MAX     = UINT8_MAX
-} PointFieldType_e;
-
-/**
- * @struct PointField_t
- * @brief Describes one named field within a single point, matching ROS 2 sensor_msgs/PointField.
- *
- * @param name      Field name (e.g. "x", "y", "z", "intensity", "ring").
- * @param offset    Byte offset of this field from the start of a point.
- * @param datatype  Scalar type of the field values.
- * @param count     Number of elements of @c datatype in this field (usually 1).
- */
-typedef struct PointField
-{
-    std::string      name;
-    uint32_t         offset;
-    PointFieldType_e datatype;
-    uint32_t         count;
-
-    PointField( std::string name, uint32_t offset, PointFieldType_e datatype, uint32_t count = 1 )
-        : name( std::move( name ) ), offset( offset ), datatype( datatype ), count( count )
-    {}
-} PointField_t;
-
-/** @} */  // end of RoboticsSensor
-
 }   // namespace Memory
 }   // namespace QRB
 
