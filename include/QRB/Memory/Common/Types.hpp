@@ -4,7 +4,10 @@
 #ifndef QRB_COMMON_TYPES_HPP
 #define QRB_COMMON_TYPES_HPP
 
+#include "QC/Common/QCString.hpp"
+
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -13,6 +16,22 @@ namespace QRB
 {
 namespace Memory
 {
+
+/**
+ * @brief Maximum number of characters of a coordinate frame identifier (excluding the
+ *        terminating null), shared by all descriptors.
+ *
+ * Fixed so that a buffer descriptor has no dynamic length member, as required by QCNode.
+ */
+static const std::size_t QRB_FRAME_ID_MAX_LEN = 63U;
+
+/**
+ * @brief Fixed-capacity coordinate frame identifier (e.g. "base_link", "odom", "lidar_link").
+ *
+ * A string longer than QRB_FRAME_ID_MAX_LEN is not truncated: QCString::Assign fails with
+ * QC_STATUS_NOMEM and the string stays empty.
+ */
+typedef QC::QCString<QRB_FRAME_ID_MAX_LEN> FrameId_t;
 
 /**
  * @defgroup RoboticsGeometry Robotics Geometry Types
@@ -112,6 +131,35 @@ typedef struct PoseWithCovariance
     Pose_t                 pose;
     std::array<double, 36> covariance{};
 } PoseWithCovariance_t;
+
+/**
+ * @struct Twist_t
+ * @brief Velocity expressed as linear and angular parts,
+ *        matching ROS 2 geometry_msgs/Twist.
+ *
+ * @param linear   Linear velocity in m/s.
+ * @param angular  Angular velocity in rad/s.
+ */
+typedef struct Twist
+{
+    Vector3d_t linear;
+    Vector3d_t angular;
+} Twist_t;
+
+/**
+ * @struct TwistWithCovariance_t
+ * @brief Twist with associated 6x6 covariance matrix,
+ *        matching ROS 2 geometry_msgs/TwistWithCovariance.
+ *
+ * @param twist       Velocity (linear + angular).
+ * @param covariance  Row-major 6x6 covariance matrix for (x, y, z, rot_x, rot_y, rot_z).
+ *                    A zero matrix indicates unknown covariance.
+ */
+typedef struct TwistWithCovariance
+{
+    Twist_t                twist;
+    std::array<double, 36> covariance{};
+} TwistWithCovariance_t;
 
 /**
  * @struct BoundingBox3d_t

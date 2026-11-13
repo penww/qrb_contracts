@@ -36,12 +36,6 @@ static const uint32_t QRB_POINT_CLOUD_MAX_FIELDS = 16U;
 static const std::size_t QRB_POINT_FIELD_NAME_MAX_LEN = 31U;
 
 /**
- * @brief Maximum number of characters of the coordinate frame identifier (excluding the
- *        terminating null).
- */
-static const std::size_t QRB_POINT_CLOUD_FRAME_ID_MAX_LEN = 63U;
-
-/**
  * @enum PointFieldType_e
  * @brief Scalar data types for a point field, matching ROS 2 sensor_msgs/PointField constants.
  */
@@ -257,8 +251,8 @@ public:
  * @param isDense       True if the cloud contains no invalid (NaN/Inf) points.
  * @param timestampNs   Acquisition timestamp in nanoseconds (CLOCK_MONOTONIC).
  * @param frameId       Coordinate frame in which the points are expressed
- *                      (e.g. "lidar_link", "base_link"), a fixed-capacity string of at most
- *                      QRB_POINT_CLOUD_FRAME_ID_MAX_LEN characters.
+ *                      (e.g. "lidar_link", "base_link"), a @c FrameId_t, a fixed-capacity string
+ *                      of at most QRB_FRAME_ID_MAX_LEN characters.
  *
  * @note The descriptor has no dynamic length member (no std::string / std::vector), so copying it
  * never allocates, as required for buffer descriptors.
@@ -352,7 +346,7 @@ public:
     uint32_t                  rowStep;      /**< Bytes per row (>= pointStep * width). */
     bool                      isDense;      /**< True if no NaN/Inf points are present. */
     uint64_t                  timestampNs;  /**< Acquisition timestamp (ns, CLOCK_MONOTONIC). */
-    QC::QCString<QRB_POINT_CLOUD_FRAME_ID_MAX_LEN> frameId; /**< Coordinate frame identifier. */
+    FrameId_t                 frameId;      /**< Coordinate frame identifier. */
 
 } PointCloudDescriptor_t;
 
