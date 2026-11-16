@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(qrb_contracts VERSION 0.1.0 LANGUAGES CXX)
+project(qrb_contracts VERSION 1.0.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
@@ -12,6 +12,12 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Protocol Buffer schemas (qrb_contracts_proto)
+option(QRB_CONTRACTS_BUILD_PROTO "Build and install the C++ code of the protobuf schemas" OFF)
+if(QRB_CONTRACTS_BUILD_PROTO)
+  add_subdirectory(proto)
+endif()
 
 install(TARGETS ${PROJECT_NAME} EXPORT ${PROJECT_NAME}Targets)
 install(EXPORT ${PROJECT_NAME}Targets

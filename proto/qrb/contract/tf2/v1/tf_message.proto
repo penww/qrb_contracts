@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package qrb.contract.tf2.v1;
+
+import "qrb/contract/geometry/v1/transform_stamped.proto";
+
+// Mirrors tf2_msgs/TFMessage.
+message TFMessage {
+    repeated qrb.contract.geometry.v1.TransformStamped transforms = 1;  // All transforms of one update.
+}

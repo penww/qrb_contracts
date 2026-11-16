@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package qrb.contract.geometry.v1;
+
+import "qrb/contract/geometry/v1/transform.proto";
+import "qrb/contract/common/v1/header.proto";
+
+// Mirrors geometry_msgs/TransformStamped.
+message TransformStamped {
+    qrb.contract.common.v1.Header header         = 1;  // header.frame_id is the parent (reference) frame.
+    string                        child_frame_id = 2;  // Child frame.
+    Transform                     transform      = 3;
+}

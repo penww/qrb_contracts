@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package qrb.contract.geometry.v1;
 
-// Mirrors QRB::Memory::Quaternion_t / geometry_msgs/Quaternion.
+// Mirrors geometry_msgs/Quaternion.
 message Quaternion {
     double x = 1;
     double y = 2;

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package qrb.contract.vision.v1;
+
+import "qrb/contract/geometry/v1/pose.proto";
+import "qrb/contract/geometry/v1/vector3.proto";
+
+// Mirrors vision_msgs/BoundingBox3D.
+message BoundingBox3D {
+    qrb.contract.geometry.v1.Pose    center = 1;  // Position and orientation of the box center.
+    qrb.contract.geometry.v1.Vector3 size   = 2;  // Total size in metres along each axis.
+}

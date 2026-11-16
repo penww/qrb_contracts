@@ -3,19 +3,17 @@ syntax = "proto3";
 package qrb.contract.sensor.v1;
 
 import "qrb/contract/sensor/v1/point_field.proto";
+import "qrb/contract/common/v1/header.proto";
 
-// Mirrors QRB::Memory::PointCloudDescriptor_t / sensor_msgs/PointCloud2.
-// Omitted local-only fields: pBuf, dmaHandle, pid, size, alignment, cache,
-//                            allocatorType, offset, validSize, id.
+// Mirrors sensor_msgs/PointCloud2.
 message PointCloud2 {
-    uint64              timestamp_ns = 1;  // Acquisition timestamp (ns, CLOCK_MONOTONIC).
-    string              frame_id     = 2;  // Coordinate frame identifier.
-    uint32              height       = 3;  // Rows; 1 for unordered clouds.
-    uint32              width        = 4;  // Points per row.
-    repeated PointField fields       = 5;  // Per-field layout descriptors.
-    bool                is_bigendian = 6;
-    uint32              point_step   = 7;  // Bytes per point.
-    uint32              row_step     = 8;  // Bytes per row (point_step * width).
-    bytes               data         = 9;  // Raw point data.
-    bool                is_dense     = 10; // True if no NaN/Inf points.
+    qrb.contract.common.v1.Header header       = 1;
+    uint32                        height       = 2;  // Rows; 1 for unordered clouds.
+    uint32                        width        = 3;  // Points per row.
+    repeated PointField           fields       = 4;  // Per-field layout descriptors.
+    bool                          is_bigendian = 5;
+    uint32                        point_step   = 6;  // Bytes per point.
+    uint32                        row_step     = 7;  // Bytes per row (point_step * width).
+    bytes                         data         = 8;  // Raw point data.
+    bool                          is_dense     = 9;  // True if no NaN/Inf points.
 }

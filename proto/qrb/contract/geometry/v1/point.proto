@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package qrb.contract.geometry.v1;
 
-// Mirrors QRB::Memory::Point3d_t / geometry_msgs/Point.
-message Point3d {
+// Mirrors geometry_msgs/Point.
+message Point {
     double x = 1;
     double y = 2;
     double z = 3;

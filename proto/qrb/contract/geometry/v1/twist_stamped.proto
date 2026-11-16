@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package qrb.contract.geometry.v1;
+
+import "qrb/contract/geometry/v1/twist.proto";
+import "qrb/contract/common/v1/header.proto";
+
+// Mirrors geometry_msgs/TwistStamped.
+message TwistStamped {
+    qrb.contract.common.v1.Header header = 1;  // header.frame_id is the frame the twist is expressed in.
+    Twist                         twist  = 2;
+}

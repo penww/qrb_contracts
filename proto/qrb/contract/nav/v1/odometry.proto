@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package qrb.contract.nav.v1;
+
+import "qrb/contract/geometry/v1/pose_with_covariance.proto";
+import "qrb/contract/geometry/v1/twist_with_covariance.proto";
+import "qrb/contract/common/v1/header.proto";
+
+// Mirrors nav_msgs/Odometry.
+message Odometry {
+    qrb.contract.common.v1.Header header         = 1;  // header.frame_id is the frame of the pose (e.g. "odom").
+    string                        child_frame_id = 2;  // Frame of the twist (e.g. "base_link").
+
+    qrb.contract.geometry.v1.PoseWithCovariance  pose  = 3;
+    qrb.contract.geometry.v1.TwistWithCovariance twist = 4;
+}
