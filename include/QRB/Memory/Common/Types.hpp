@@ -29,7 +29,7 @@ static const std::size_t QRB_FRAME_ID_MAX_LEN = 63U;
  * @brief Fixed-capacity coordinate frame identifier (e.g. "base_link", "odom", "lidar_link").
  *
  * A string longer than QRB_FRAME_ID_MAX_LEN is not truncated: QCString::Assign fails with
- * QC_STATUS_NOMEM and the string stays empty.
+ * QC_STATUS_NOMEM and the string keeps its previous content.
  */
 typedef QC::QCString<QRB_FRAME_ID_MAX_LEN> FrameId_t;
 
