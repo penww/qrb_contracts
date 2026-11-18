@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <utility>
 
 namespace QRB
 {
@@ -107,8 +108,13 @@ static_assert( std::is_trivially_copyable<Detection3dRaw_t>::value,
  *                     matching ROS 2 std_msgs/Header.stamp.
  * @param frameId      Coordinate frame in which all detections are expressed
  *                     (e.g. "camera_link", "lidar_link"),
- *                     matching ROS 2 std_msgs/Header.frame_id.
+ *                     matching ROS 2 std_msgs/Header.frame_id. A @c FrameId_t, a fixed-capacity
+ *                     string of at most QRB_FRAME_ID_MAX_LEN characters.
  * @param objCount     Number of valid @c Detection3dRaw_t entries in the DMA buffer.
+ *
+ * @note The descriptor has no dynamic length member (no std::string / std::vector), so copying it
+ * never allocates, as required for buffer descriptors. The detections themselves are stored in the
+ * DMA buffer as fixed-size POD structs.
  */
 typedef struct ObjectDetectionDescriptor : public QC::Memory::BufferDescriptor_t
 {
@@ -121,6 +127,10 @@ public:
     ~ObjectDetectionDescriptor() override = default;
 
     ObjectDetectionDescriptor( const ObjectDetectionDescriptor &other ) = default;
+    ObjectDetectionDescriptor( ObjectDetectionDescriptor &&other ) = default;
+
+    // Inherit the other assignment overloads of the base class, as qcnode descriptors do.
+    using QC::Memory::BufferDescriptor_t::operator=;
 
     /**
      * @brief Copy-assign from a base @c BufferDescriptor_t.
@@ -128,17 +138,22 @@ public:
      * Copies all base-class fields; detection-specific fields are left
      * unchanged so the caller can set them afterwards.
      */
-    ObjectDetectionDescriptor &operator=( const QC::Memory::BufferDescriptor_t &other );
+    ObjectDetectionDescriptor &operator=( const QC::Memory::BufferDescriptor_t &other ) noexcept override;
 
     /**
      * @brief Copy-assign from another @c ObjectDetectionDescriptor_t.
      */
-    ObjectDetectionDescriptor &operator=( const ObjectDetectionDescriptor &other );
+    ObjectDetectionDescriptor &operator=( const ObjectDetectionDescriptor &other ) noexcept;
+
+    /**
+     * @brief Move-assign from another @c ObjectDetectionDescriptor_t.
+     */
+    ObjectDetectionDescriptor &operator=( ObjectDetectionDescriptor &&other ) noexcept;
 
     /**
      * @brief Copy-assign from the root @c QCBufferDescriptorBase_t.
      */
-    ObjectDetectionDescriptor &operator=( const QC::Memory::QCBufferDescriptorBase_t &other );
+    ObjectDetectionDescriptor &operator=( const QC::Memory::QCBufferDescriptorBase_t &other ) noexcept override;
 
     // -------------------------------------------------------------------------
     // Accessors
@@ -178,11 +193,68 @@ public:
     // Data members
     // -------------------------------------------------------------------------
 
-    uint64_t    timestampNs; /**< Acquisition timestamp (ns, CLOCK_MONOTONIC). */
-    std::string frameId;     /**< Coordinate frame identifier. */
-    uint32_t    objCount;    /**< Number of valid detections in the DMA buffer. */
+    uint64_t  timestampNs; /**< Acquisition timestamp (ns, CLOCK_MONOTONIC). */
+    FrameId_t frameId;     /**< Coordinate frame identifier. */
+    uint32_t  objCount;    /**< Number of valid detections in the DMA buffer. */
 
 } ObjectDetectionDescriptor_t;
+
+inline ObjectDetectionDescriptor &ObjectDetectionDescriptor::operator=( const QC::Memory::BufferDescriptor_t &other ) noexcept
+{
+    QC::Memory::BufferDescriptor_t::operator=( other );
+    this->type = QC::QC_BUFFER_TYPE_CUSTOM_2;
+    return *this;
+}
+
+inline ObjectDetectionDescriptor &ObjectDetectionDescriptor::operator=( const ObjectDetectionDescriptor &other ) noexcept
+{
+    if ( this != &other )
+    {
+        QC::Memory::BufferDescriptor_t::operator=( other );
+        this->type = QC::QC_BUFFER_TYPE_CUSTOM_2;
+        this->timestampNs = other.timestampNs;
+        this->frameId = other.frameId;
+        this->objCount = other.objCount;
+    }
+    return *this;
+}
+
+inline ObjectDetectionDescriptor &ObjectDetectionDescriptor::operator=( ObjectDetectionDescriptor &&other ) noexcept
+{
+    // No heap buffer to steal: moving is a copy of the fixed-size members.
+    if ( this != &other )
+    {
+        QC::Memory::BufferDescriptor_t::operator=( std::move( other ) );
+        this->type = QC::QC_BUFFER_TYPE_CUSTOM_2;
+        this->timestampNs = other.timestampNs;
+        this->frameId = other.frameId;
+        this->objCount = other.objCount;
+    }
+    return *this;
+}
+
+inline ObjectDetectionDescriptor &ObjectDetectionDescriptor::operator=( const QC::Memory::QCBufferDescriptorBase_t &other ) noexcept
+{
+    if ( this != &other )
+    {
+        const ObjectDetectionDescriptor_t *pDetDesc = dynamic_cast<const ObjectDetectionDescriptor_t *>( &other );
+        const QC::Memory::BufferDescriptor_t *pBufDesc =
+                dynamic_cast<const QC::Memory::BufferDescriptor_t *>( &other );
+        if ( nullptr != pDetDesc )
+        {
+            ObjectDetectionDescriptor::operator=( *pDetDesc );
+        }
+        else if ( nullptr != pBufDesc )
+        {
+            ObjectDetectionDescriptor::operator=( *pBufDesc );
+        }
+        else
+        {
+            QC::Memory::BufferDescriptor_t::operator=( other );
+        }
+    }
+    return *this;
+}
 
 /** @} */  // end of RoboticsMemory
 

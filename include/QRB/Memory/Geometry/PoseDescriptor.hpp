@@ -8,7 +8,7 @@
 #include "QRB/Memory/Common/Types.hpp"
 
 #include <cstdint>
-#include <string>
+#include <utility>
 
 namespace QRB
 {
@@ -46,8 +46,14 @@ namespace Memory
  * @param timestampNs        Acquisition timestamp in nanoseconds (CLOCK_MONOTONIC),
  *                           matching ROS 2 std_msgs/Header.stamp.
  * @param frameId            Coordinate frame in which the pose is expressed
- *                           (e.g. "map", "odom"), matching ROS 2 std_msgs/Header.frame_id.
+ *                           (e.g. "map", "odom"), matching ROS 2 std_msgs/Header.frame_id. A
+ *                           @c FrameId_t, a fixed-capacity string of at most
+ *                           QRB_FRAME_ID_MAX_LEN characters.
  * @param poseWithCovariance 6-DOF pose with a 6x6 covariance matrix.
+ *
+ * @note The descriptor has no dynamic length member (no std::string / std::vector), so copying it
+ * never allocates, as required for buffer descriptors. The pose values are members of the
+ * descriptor, not stored in the DMA buffer.
  */
 typedef struct PoseDescriptor : public QC::Memory::BufferDescriptor_t
 {
@@ -60,6 +66,10 @@ public:
     ~PoseDescriptor() override = default;
 
     PoseDescriptor( const PoseDescriptor &other ) = default;
+    PoseDescriptor( PoseDescriptor &&other ) = default;
+
+    // Inherit the other assignment overloads of the base class, as qcnode descriptors do.
+    using QC::Memory::BufferDescriptor_t::operator=;
 
     /**
      * @brief Copy-assign from a base @c BufferDescriptor_t.
@@ -67,27 +77,89 @@ public:
      * Copies all base-class fields; pose-specific fields are left
      * unchanged so the caller can set them afterwards.
      */
-    PoseDescriptor &operator=( const QC::Memory::BufferDescriptor_t &other );
+    PoseDescriptor &operator=( const QC::Memory::BufferDescriptor_t &other ) noexcept override;
 
     /**
      * @brief Copy-assign from another @c PoseDescriptor_t.
      */
-    PoseDescriptor &operator=( const PoseDescriptor &other );
+    PoseDescriptor &operator=( const PoseDescriptor &other ) noexcept;
+
+    /**
+     * @brief Move-assign from another @c PoseDescriptor_t.
+     */
+    PoseDescriptor &operator=( PoseDescriptor &&other ) noexcept;
 
     /**
      * @brief Copy-assign from the root @c QCBufferDescriptorBase_t.
      */
-    PoseDescriptor &operator=( const QC::Memory::QCBufferDescriptorBase_t &other );
+    PoseDescriptor &operator=( const QC::Memory::QCBufferDescriptorBase_t &other ) noexcept override;
 
     // -------------------------------------------------------------------------
     // Data members
     // -------------------------------------------------------------------------
 
     uint64_t             timestampNs;        /**< Acquisition timestamp (ns, CLOCK_MONOTONIC). */
-    std::string          frameId;            /**< Coordinate frame identifier. */
+    FrameId_t            frameId;            /**< Coordinate frame identifier. */
     PoseWithCovariance_t poseWithCovariance; /**< 6-DOF pose with covariance. */
 
 } PoseDescriptor_t;
+
+inline PoseDescriptor &PoseDescriptor::operator=( const QC::Memory::BufferDescriptor_t &other ) noexcept
+{
+    QC::Memory::BufferDescriptor_t::operator=( other );
+    this->type = QC::QC_BUFFER_TYPE_CUSTOM_1;
+    return *this;
+}
+
+inline PoseDescriptor &PoseDescriptor::operator=( const PoseDescriptor &other ) noexcept
+{
+    if ( this != &other )
+    {
+        QC::Memory::BufferDescriptor_t::operator=( other );
+        this->type = QC::QC_BUFFER_TYPE_CUSTOM_1;
+        this->timestampNs = other.timestampNs;
+        this->frameId = other.frameId;
+        this->poseWithCovariance = other.poseWithCovariance;
+    }
+    return *this;
+}
+
+inline PoseDescriptor &PoseDescriptor::operator=( PoseDescriptor &&other ) noexcept
+{
+    // No heap buffer to steal: moving is a copy of the fixed-size members.
+    if ( this != &other )
+    {
+        QC::Memory::BufferDescriptor_t::operator=( std::move( other ) );
+        this->type = QC::QC_BUFFER_TYPE_CUSTOM_1;
+        this->timestampNs = other.timestampNs;
+        this->frameId = other.frameId;
+        this->poseWithCovariance = other.poseWithCovariance;
+    }
+    return *this;
+}
+
+inline PoseDescriptor &PoseDescriptor::operator=( const QC::Memory::QCBufferDescriptorBase_t &other ) noexcept
+{
+    if ( this != &other )
+    {
+        const PoseDescriptor_t *pPoseDesc = dynamic_cast<const PoseDescriptor_t *>( &other );
+        const QC::Memory::BufferDescriptor_t *pBufDesc =
+                dynamic_cast<const QC::Memory::BufferDescriptor_t *>( &other );
+        if ( nullptr != pPoseDesc )
+        {
+            PoseDescriptor::operator=( *pPoseDesc );
+        }
+        else if ( nullptr != pBufDesc )
+        {
+            PoseDescriptor::operator=( *pBufDesc );
+        }
+        else
+        {
+            QC::Memory::BufferDescriptor_t::operator=( other );
+        }
+    }
+    return *this;
+}
 
 /** @} */  // end of RoboticsMemory
 
